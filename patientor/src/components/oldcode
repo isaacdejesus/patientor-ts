@@ -1,0 +1,50 @@
+import {useParams} from 'react-router-dom';
+import React from 'react';
+import {useStateValue} from '../state';
+import { Patient } from '../types';
+import {apiBaseUrl }from '../constants';
+import axios from 'axios';
+const PatientPage = () => {
+    const [{patients}, dispatch ] = useStateValue();
+    const {id} = useParams<{id: string}>();
+    const returnUser = (id: string): Patient => {
+        return patients[id];
+    };
+    const val: Patient = returnUser(id ?? "d2773336-f723-11e9-8f0b-362b9e155667");
+    const patientType = (): JSX.Element => {
+        return(
+        <div>
+            <p>{val.name}</p>
+            <i>{val.gender} </i>
+            <br />
+            <i>{val.dateOfBirth} </i>
+            {console.log(val.entries[0].description)}
+        </div>
+        );
+    };
+    if(!val)
+    {//if pt not in state, we get it and add it to state
+        const getPatient = async () => {
+            try{
+                const {data: patient} = await axios.get<Patient>(
+                    `${apiBaseUrl}/patients/${id ?? "d2773336-f723-11e9-8f0b-362b9e155667"}`
+                );
+                dispatch({type: "ADD_PATIENT", payload: patient});
+                }
+            catch(error: unknown) {
+                console.log(error);
+            }
+        };
+        void getPatient();
+    }
+    return(
+        <div>
+            {console.log(val.entries[0].description)}
+        {patientType()};
+        </div>
+    );
+};
+
+export default PatientPage;
+
+//didn't do 9.18. don't want to refactor.
