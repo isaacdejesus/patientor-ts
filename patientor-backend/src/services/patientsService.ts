@@ -5,12 +5,13 @@ const getPatients = (): Array<patientEntry> => {
     return patients;
 };
 const getNonSensitivePatientEntries = (): nonSensitivePatientEntry[] => {
-    return patients.map(({id, name, dateOfBirth, gender, occupation}) => ({
+    return patients.map(({id, name, dateOfBirth, gender, occupation, entries}) => ({
         id,
         name,
         dateOfBirth,
         gender,
-        occupation
+        occupation,
+        entries
     }));
 };
 const findById = (id: string): patientEntry | undefined => {
