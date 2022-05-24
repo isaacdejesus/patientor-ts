@@ -1,20 +1,28 @@
 import {useParams} from 'react-router-dom';
 import React from 'react';
 import {useStateValue} from '../state';
-import { Entry, Patient } from '../types';
+import { Entry, Patient, Diagnosis } from '../types';
 import {apiBaseUrl }from '../constants';
 import axios from 'axios';
 const PatientPage = () => {
-    const [{ currentPatient}, dispatch ] = useStateValue();
+    const [{ currentPatient, patientCodes}, dispatch ] = useStateValue();
     const {id} = useParams<{id: string}>();
-    //const returnUser = (id: string): Patient => {
-     //   return patients[id];
-    //};
-        //if(returnUser(id ?? "d2773336-f723-11e9-8f0b-362b9e155667"))
-            //return;
-        //if(patients.currentPatient)
-         //   return;
 
+    if(Object.keys(patientCodes).length === 0){
+        console.log("I aim heree");
+        const setCodes = async () => {
+            try{
+                const {data: des} = await axios.get<Diagnosis[]>(
+                    `${apiBaseUrl}/diagnoses`
+                );
+                dispatch({type: "ADD_CODES", payload: des});
+                }
+            catch(error: unknown) {
+                console.log(error);
+            }
+        };
+        void setCodes();}
+        
     if(currentPatient.name === '000' || currentPatient.id !== id ){
         console.log("stuff is undef");
         const getPatient = async () => {
@@ -45,7 +53,7 @@ const PatientPage = () => {
                 <ul>
                 {vals.map((code: string) => 
                 <li key= {code}>
-                    {code}
+                    {code} {patientCodes[code].name}
                 </li>
                     )}
                 </ul>
@@ -73,6 +81,7 @@ const PatientPage = () => {
             <div>
                 <p>{val.name}</p>;
                 <h3> No Entries to display </h3>
+                <h2>codes: </h2>
             </div>
         );
         switch(val.entries[0].type){
